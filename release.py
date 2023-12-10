@@ -181,6 +181,8 @@ def sendHotkey(hotkey):
              hotkey = '5'
         elif hotkey == 'space':
              hotkey = Key.space
+        elif hotkey == 'right':
+             hotkey = Key.right
         
 
         #db_window.restore()
@@ -303,7 +305,7 @@ def recognize(image_path, screenshot_image, screenshot_image_gray, thread_name, 
     if 'mobs' in image_path:
         threshold = 0.82
         if 'red' in image_path:
-            threshold = 0.40
+            threshold = 0.68
 
     if 'map_center' in image_path:
         threshold = 0.95
@@ -797,7 +799,7 @@ def heal():
         if hp:
             time.sleep(1)
             #print(hp)
-            if hp < 40:
+            if hp < 42:
                 sendHotkey('5')
     else:
         time.sleep(0.17)
@@ -925,6 +927,8 @@ def listen(thread_name, message_queue):
         
         if thread_name == 'space':
             sendHotkey('space')
+            time.sleep(1)
+            sendHotkey('1')
             time.sleep(15)
             continue
         
@@ -980,6 +984,11 @@ def listen(thread_name, message_queue):
                     if response == True:
                         break
                         #heal()
+                    else:
+                        if 'mob' in thread_name:
+                            for i in range(7):
+                                sendHotkey('right')
+                            
 
                     global howManyMobs
                     howManyMobs = 0
