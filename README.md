@@ -1,20 +1,15 @@
-# tibia_bot
-- by python opencv2 and tesseract
-  
-- mob recognize by picture
-- heal and mana recognition by OCR (picture to text)
-- endpoints walking and minimap centering by waypoint images
-- multithreading, different thread for each feature - non blocking actions
-- continous refresh thread for smoother preview window
+@sly6906 @nicorolla_ 
+I basically have written my own bot in 24h based on my previous tibia ots bot.
 
-  Instruction:
-  click q to exit
-  add monster healthbar pictures to the folder mobs
-  add waypoint pictures to the folder waypoint
-  add map centering icon to the folder waypoint
+- monster nick AI Image recognition
+- circles with cursor around moving monster until found 'sword' icon to attack and click
+- checking hp percentage (based on % of pixels in bar in the hp/mana window)
+- auto item pickup (just spam button, but removed that, pet is more worthy)
+- multithreading, of course zero blocking and independent system to check if currently in battle/if should heal/if should attack etc
 
-  hotkeys:
-    - senzu/mana [F5]
-    - spell [F1]
-    - health [F3]
-  
+
+Whole thing based no cv image recognition, if you want to exp on mushpang you have to do some screenshots of mushpang basically.
+
+If any one intersted pm me, can share probably for something or not (:
+
+QUESTION: If i do not do captcha, will my character be banned? or what
