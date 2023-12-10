@@ -246,6 +246,10 @@ def distance_to_average(coord, coordinates, target=(1460, 560)):
 def sort_by_distance_to_average(coordinates, target=(1460, 560)):
     return sorted(coordinates, key=lambda coord: distance_to_average(coord, coordinates))
 
+def sort_by_center(point, target=(1460,560)):
+    x1, y1 = point
+    x2, y2 = target
+    return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
     
 def recognize(image_path, screenshot_image, screenshot_image_gray, thread_name, message_queue):
     # if 'mobs' in image_path:
@@ -297,7 +301,9 @@ def recognize(image_path, screenshot_image, screenshot_image_gray, thread_name, 
         return
     
     if 'mobs' in image_path:
-        threshold = 0.69
+        threshold = 0.82
+        if 'red' in image_path:
+            threshold = 0.40
 
     if 'map_center' in image_path:
         threshold = 0.95
@@ -315,9 +321,10 @@ def recognize(image_path, screenshot_image, screenshot_image_gray, thread_name, 
     
     locations = np.where(result >= threshold)
     locations = list(zip(*locations[::-1]))
-    random.shuffle(locations)
+    #random.shuffle(locations)
     
-    #locations = sort_by_distance_to_average(locations)
+    locations = sorted(locations, key=lambda point: sort_by_center(point))
+
 
     #print(locations)
     # if '_waypoint' in image_path and not locations and (lastClickTimestamp == None or time.time() - lastClickTimestamp >= 15):
@@ -853,6 +860,31 @@ def custom_sort(item):
     
 
 
+def replace_color(image_path, target_color, replacement_color, tolerance=50):
+    img = Image.open(image_path)
+
+    # Convert the image to a NumPy array
+    img_array = np.array(img)
+
+    # Define the target color and replacement color
+    target_rgb = np.array([int(target_color[i:i+2], 16) for i in (0, 2, 4)])
+    replacement_rgb = np.array([int(replacement_color[i:i+2], 16) for i in (0, 2, 4)])
+
+    # Define a tolerance level for color replacement
+    tolerance_range = np.array([tolerance, tolerance, tolerance])
+
+    # Create a mask for pixels close to the target color
+    mask = np.all(np.abs(img_array - target_rgb) < tolerance_range, axis=-1)
+
+    # Replace pixels in the mask with the replacement color
+    img_array[mask] = replacement_rgb
+
+    # Save the modified image with specified quality
+    modified_img = Image.fromarray(img_array)
+    modified_img.save('modified_image.jpg', quality=95)
+    return modified_img
+
+    
 def combine_arrays_in_dict(dictionary):
     result = []
     for key in dictionary:
@@ -931,8 +963,19 @@ def listen(thread_name, message_queue):
                         screenshot_image = ImageGrab.grab(bbox=(1546, 140, 1563, 155))
                         screenshot_image = np.array(screenshot_image)
 
+                    if 'mob' in thread_name:    
+                        # response = recognize(image_path,   
+                        #                      np.array(replace_color(image_path, 
+                        #                                    'D6D5A2', 
+                        #                                    'E50808', 
+                        #                                    80)), None, thread_name, message_queue)
+                        # if response == True:
+                        #     break
                         
-                    response = recognize(image_path, screenshot_image, None, thread_name, message_queue)
+                        response = recognize(image_path, screenshot_image, None, thread_name, message_queue)
+                    else:
+                        response = recognize(image_path, screenshot_image, None, thread_name, message_queue)
+                        
 
                     if response == True:
                         break
